@@ -662,6 +662,25 @@ const logout = () => {
                         <div class="menu-text">Usuarios</div>
                     </Link>
                 </div>
+                <div
+                    v-if="
+                        user_logeado.permisos == '*' ||
+                        user_logeado.permisos.includes('reportes.tareas')
+                    "
+                    class="menu-item"
+                    :class="[
+                        route_current == 'reportes.tareas'
+                            ? 'active'
+                            : 'none',
+                    ]"
+                >
+                    <Link :href="route('reportes.tareas')" class="menu-link">
+                        <div class="menu-icon">
+                            <i class="fa fa-file-alt"></i>
+                        </div>
+                        <div class="menu-text">Informe de Tareas</div>
+                    </Link>
+                </div>
                 <div class="menu-header">OTROS</div>
                 <div
                     v-if="

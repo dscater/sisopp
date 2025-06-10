@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 09-06-2025 a las 22:42:41
+-- Tiempo de generación: 10-06-2025 a las 14:50:51
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -56,7 +56,7 @@ CREATE TABLE `configuracions` (
 --
 
 INSERT INTO `configuracions` (`id`, `nombre_sistema`, `alias`, `logo`, `created_at`, `updated_at`) VALUES
-(1, 'SISOPP S.A.', 'SISOPP', 'logo.png', NULL, NULL);
+(1, 'SISOPP S.A.', 'SISOPP', '1749567010_1.png', NULL, '2025-06-10 14:50:10');
 
 -- --------------------------------------------------------
 

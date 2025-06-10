@@ -118,5 +118,8 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");
     Route::get('reportes/r_usuarios', [ReporteController::class, 'r_usuarios'])->name("reportes.r_usuarios");
+
+    Route::get('reportes/tareas', [ReporteController::class, 'tareas'])->name("reportes.tareas");
+    Route::get('reportes/r_tareas', [ReporteController::class, 'r_tareas'])->name("reportes.r_tareas");
 });
 require __DIR__ . '/auth.php';

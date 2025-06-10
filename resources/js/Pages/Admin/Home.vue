@@ -11,9 +11,11 @@ import { usePage, Head, Link } from "@inertiajs/vue3";
 import Highcharts from "highcharts";
 import exporting from "highcharts/modules/exporting";
 import accessibility from "highcharts/modules/accessibility";
+import DarkUnica from "highcharts/themes/dark-unica";
 const { auth } = usePage().props;
 const user = ref(auth.user);
 
+DarkUnica(Highcharts);
 exporting(Highcharts);
 accessibility(Highcharts);
 Highcharts.setOptions({
@@ -138,8 +140,21 @@ const renderChart = (containerId, categories, data) => {
         },
         xAxis: {
             categories: categories,
+            scrollbar: {
+                enabled: true,
+            },
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: "14px",
+                    fontFamily: "Verdana, sans-serif",
+                },
+            },
+            min: 0,
+            max: 3,
         },
         yAxis: {
+            min: 0,
             title: {
                 text: "CANTIDAD",
             },
@@ -154,8 +169,8 @@ const renderChart = (containerId, categories, data) => {
                     enabled: true,
                     // format: "{point.y}",
                     style: {
-                        fontSize: "11px",
-                        fontWeight: "bold",
+                        fontSize: "14px",
+                        fontFamily: "Arial, sans-serif",
                     },
                     formatter: function () {
                         return parseInt(this.point.y); // Aquí se aplica el formato de moneda
@@ -166,8 +181,13 @@ const renderChart = (containerId, categories, data) => {
         tooltip: {
             useHTML: true,
             formatter: function () {
-                return `<h4 style="font-size:13px" class="w-100 text-center mb-1">${this.x}</h4><br>
-                <h5><strong>Cantidad: </strong>${this.point.y}</h5>`;
+                console.log(this);
+                return `<h4 style="font-size:13px" class="w-100 text-center mb-0">${this.x}</h4><br>
+                <h5><strong>${this.series.name}: </strong>${this.point.y}</h5>`;
+            },
+            style: {
+                fontSize: "14px",
+                fontFamily: "Arial, sans-serif",
             },
         },
 

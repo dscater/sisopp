@@ -107,7 +107,7 @@ class TareaController extends Controller
      */
     public function show(Tarea $tarea): JsonResponse
     {
-        return response()->JSON($tarea);
+        return response()->JSON($tarea->load(["tarea_materials", "tarea_operarios"]));
     }
 
     public function update(Tarea $tarea, AreaUpdateRequest $request)

@@ -1,32 +1,56 @@
-import { onMounted, ref } from "vue";
+import { onMounted, reactive } from "vue";
 
-const oTarea = ref({
+const oTarea = reactive({
     id: 0,
-    nombre: "",
+    codigo: "",
+    nro_cod: "",
     descripcion: "",
-    fecha_registro: "",
+    area_id: "",
+    producto_id: "",
+    user_id: "",
+    estado: "",
+    tarea_materials: [],
+    tarea_operarios: [],
+    eliminados_materials: [],
+    eliminados_operarios: [],
     _method: "POST",
 });
 
 export const useTareas = () => {
     const setTarea = (item = null) => {
         if (item) {
-            oTarea.value.id = item.id;
-            oTarea.value.nombre = item.nombre;
-            oTarea.value.descripcion = item.descripcion;
-            oTarea.value.fecha_registro = item.fecha_registro;
-            oTarea.value._method = "PUT";
+            oTarea.id = item.id;
+            oTarea.codigo = "";
+            oTarea.nro_cod = "";
+            oTarea.descripcion = "";
+            oTarea.area_id = "";
+            oTarea.producto_id = "";
+            oTarea.user_id = "";
+            oTarea.estado = "";
+            oTarea.tarea_materials = [];
+            oTarea.tarea_operarios = [];
+            oTarea.eliminados_materials = [];
+            oTarea.eliminados_operarios = [];
+            oTarea._method = "PUT";
             return oTarea;
         }
         return false;
     };
 
     const limpiarTarea = () => {
-        oTarea.value.id = 0;
-        oTarea.value.nombre = "";
-        oTarea.value.descripcion = "";
-        oTarea.value.fecha_registro = "";
-        oTarea.value._method = "POST";
+        oTarea.id = 0;
+        oTarea.codigo = "";
+        oTarea.nro_cod = "";
+        oTarea.descripcion = "";
+        oTarea.area_id = "";
+        oTarea.producto_id = "";
+        oTarea.user_id = "";
+        oTarea.estado = "";
+        oTarea.tarea_materials = [];
+        oTarea.tarea_operarios = [];
+        oTarea.eliminados_materials = [];
+        oTarea.eliminados_operarios = [];
+        oTarea._method = "POST";
     };
 
     onMounted(() => {});

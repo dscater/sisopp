@@ -18,23 +18,18 @@ const { oTarea, limpiarTarea } = useTareas();
 const { axiosGet } = useAxios();
 const accion = ref(props.accion_dialog);
 const dialog = ref(props.open_dialog);
-let form = useForm(oTarea.value);
+let form = useForm(oTarea);
 watch(
     () => props.open_dialog,
     async (newValue) => {
         dialog.value = newValue;
         if (dialog.value) {
-            const accesoCheckbox = $("#acceso");
-            if (oTarea.value.acceso == 1) {
-                accesoCheckbox.prop("checked", false).trigger("click");
-            } else {
-                accesoCheckbox.prop("checked", true).trigger("click");
-            }
-
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form = useForm(oTarea.value);
+            form = useForm(oTarea);
+            agregarTareaMaterial();
+            agregarTareaOperario();
         }
     }
 );
@@ -117,6 +112,38 @@ const cargarUsuarios = async () => {
     listUsuarios.value = data.usuarios;
 };
 
+const agregarTareaMaterial = () => {
+    form.tarea_materials.push({
+        id: 0,
+        tarea_id: "",
+        material_id: "",
+    });
+};
+
+const eliminarTareaMaterial = (index) => {
+    const item = form.tarea_materials[index];
+    if (item.id != 0) {
+        form.eliminados_materials.push(item.id);
+    }
+    form.tarea_materials.splice(index, 1);
+};
+
+const agregarTareaOperario = () => {
+    form.tarea_operarios.push({
+        id: 0,
+        tarea_id: "",
+        user_id: "",
+    });
+};
+
+const eliminarTareaOperario = (index) => {
+    const item = form.tarea_operarios[index];
+    if (item.id != 0) {
+        form.eliminados_operarios.push(item.id);
+    }
+    form.tarea_operarios.splice(index, 1);
+};
+
 onMounted(() => {
     cargarListas();
 });
@@ -146,35 +173,17 @@ onMounted(() => {
                 <div class="modal-body">
                     <form @submit.prevent="enviarFormulario()">
                         <div class="row">
-                            <div class="col-md-6">
-                                <label>Nombre*</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
+                            <div class="col-12">
+                                <label>Descripción de tarea*</label>
+                                <el-input
+                                    type="textarea"
                                     :class="{
-                                        'parsley-error': form.errors?.nombre,
-                                    }"
-                                    v-model="form.nombre"
-                                />
-                                <ul
-                                    v-if="form.errors?.nombre"
-                                    class="parsley-errors-list filled"
-                                >
-                                    <li class="parsley-required">
-                                        {{ form.errors?.nombre }}
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <label>Descripción</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    :class="{
-                                        'parsley-error': form.errors?.descripcion,
+                                        'parsley-error':
+                                            form.errors?.descripcion,
                                     }"
                                     v-model="form.descripcion"
-                                />
+                                    autosize
+                                ></el-input>
                                 <ul
                                     v-if="form.errors?.descripcion"
                                     class="parsley-errors-list filled"
@@ -183,6 +192,186 @@ onMounted(() => {
                                         {{ form.errors?.descripcion }}
                                     </li>
                                 </ul>
+                            </div>
+                            <div class="col-md-4 mt-2">
+                                <label>Seleccionar Área de Producción*</label>
+                                <select
+                                    class="form-select"
+                                    :class="{
+                                        'parsley-error': form.errors?.area_id,
+                                    }"
+                                    v-model="form.area_id"
+                                >
+                                    <option value="">- Seleccione -</option>
+                                </select>
+
+                                <ul
+                                    v-if="form.errors?.area_id"
+                                    class="parsley-errors-list filled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.area_id }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4 mt-2">
+                                <label>Seleccionar Producto*</label>
+                                <select
+                                    class="form-select"
+                                    :class="{
+                                        'parsley-error':
+                                            form.errors?.producto_id,
+                                    }"
+                                    v-model="form.producto_id"
+                                >
+                                    <option value="">- Seleccione -</option>
+                                </select>
+
+                                <ul
+                                    v-if="form.errors?.producto_id"
+                                    class="parsley-errors-list filled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.producto_id }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4 mt-2">
+                                <label>Seleccionar supervisor*</label>
+                                <select
+                                    class="form-select"
+                                    :class="{
+                                        'parsley-error': form.errors?.user_id,
+                                    }"
+                                    v-model="form.user_id"
+                                >
+                                    <option value="">- Seleccione -</option>
+                                </select>
+                                <ul
+                                    v-if="form.errors?.user_id"
+                                    class="parsley-errors-list filled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.user_id }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mb-0">
+                            <hr class="mb-1" />
+                            <div class="col-md-6">
+                                <h4 class="w-100 text-center mt-0">
+                                    Materiales
+                                </h4>
+                                <div class="row">
+                                    <div
+                                        class="col-12"
+                                        v-for="(
+                                            item, index
+                                        ) in form.tarea_materials"
+                                    >
+                                        <table class="table mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <select
+                                                            class="form-select w-100"
+                                                            v-model="
+                                                                item.material_id
+                                                            "
+                                                        >
+                                                            <option value="">
+                                                                - Seleccione -
+                                                            </option>
+                                                        </select>
+                                                    </td>
+                                                    <td style="width: 10px">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            @click="
+                                                                eliminarTareaMaterial(
+                                                                    index
+                                                                )
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-trash"
+                                                            ></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-12">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary w-100 mt-2"
+                                            @click="agregarTareaMaterial"
+                                        >
+                                            <i class="fa fa-plus"></i> Agregar
+                                            material
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="w-100 text-center mt-0">
+                                    Operarios
+                                </h4>
+                                <div class="row">
+                                    <div
+                                        class="col-12"
+                                        v-for="(
+                                            item, index
+                                        ) in form.tarea_operarios"
+                                    >
+                                        <table class="table mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <select
+                                                            class="form-select w-100"
+                                                            v-model="
+                                                                item.user_id
+                                                            "
+                                                        >
+                                                            <option value="">
+                                                                - Seleccione -
+                                                            </option>
+                                                        </select>
+                                                    </td>
+                                                    <td style="width: 10px">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            @click="
+                                                                eliminarTareaOperario(
+                                                                    index
+                                                                )
+                                                            "
+                                                        >
+                                                            <i
+                                                                class="fa fa-trash"
+                                                            ></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-12">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary w-100 mt-2"
+                                            @click="agregarTareaOperario"
+                                        >
+                                            <i class="fa fa-plus"></i> Agregar
+                                            operario
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>

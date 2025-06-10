@@ -22,16 +22,28 @@ const { axiosDelete } = useAxios();
 
 const columns = [
     {
-        title: "",
-        data: "id",
+        title: "CÓDIGO",
+        data: "codigo",
     },
     {
-        title: "NOMBRE",
-        data: "nombre",
-    },
-    {
-        title: "DESCRIPCIÓN",
+        title: "DESCRIPCIÓN DE TAREA",
         data: "descripcion",
+    },
+    {
+        title: "ÁREA DE PRODUCCIÓN",
+        data: "area.nombre",
+    },
+    {
+        title: "PRODUCTO",
+        data: "producto.nombre",
+    },
+    {
+        title: "SUPERVISOR",
+        data: "user.full_name",
+    },
+    {
+        title: "ESTADO",
+        data: "estado",
     },
     {
         title: "FECHA DE REGISTRO",
@@ -104,9 +116,7 @@ const accionesRow = () => {
         }).then(async (result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                let respuesta = await axiosDelete(
-                    route("tareas.destroy", id)
-                );
+                let respuesta = await axiosDelete(route("tareas.destroy", id));
                 if (respuesta && respuesta.sw) {
                     updateDatatable();
                 }

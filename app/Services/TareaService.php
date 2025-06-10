@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class TareaService
 {
-    private $modulo = "ÁREAS";
+    private $modulo = "TAREAS";
 
     public function __construct(private HistorialAccionService $historialAccionService) {}
 
@@ -23,7 +23,7 @@ class TareaService
 
     public function listadoDataTable(int $length, int $start, int $page, string $search): LengthAwarePaginator
     {
-        $tareas = Tarea::select("tareas.*");
+        $tareas = Tarea::with(["tarea_materials", "tarea_operarios"])->select("tareas.*");
         if ($search && trim($search) != '') {
             $tareas->where("nombre", "LIKE", "%$search%");
         }
@@ -46,7 +46,7 @@ class TareaService
             "fecha_registro" => date("Y-m-d")
         ]);
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN ÁREA DE PRODUCCIÓN", $tarea);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA TAREA", $tarea);
 
         return $tarea;
     }
@@ -66,7 +66,7 @@ class TareaService
             "descripcion" => mb_strtoupper($datos["descripcion"]),
         ]);
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN ÁREA DE PRODUCCIÓN", $old_area, $tarea);
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA TAREA", $old_area, $tarea);
 
         return $tarea;
     }
@@ -91,7 +91,7 @@ class TareaService
         $tarea->delete();
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN ÁREA DE PRODUCCIÓN", $old_area);
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA TAREA", $old_area);
 
         return true;
     }

@@ -62,9 +62,13 @@ class PermisoService
             "configuracions.index",
             "configuracions.create",
             "configuracions.edit",
+            "configuracions.update",
             "configuracions.destroy",
 
             "reportes.usuarios",
+            "reportes.r_usuarios",
+            "reportes.tareas",
+            "reportes.r_tareas",
         ],
         "SUPERVISOR" => [],
         "OPERARIOS" => [],
