@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AreaUpdateRequest extends FormRequest
+class UserPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,14 @@ class AreaUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre" => "required",
-            "descripcion" => "nullable",
+            "password" => "required"
         ];
     }
 
     public function messages(): array
     {
         return [
-            "nombre.required" => "Debes completar este campo",
-            "descripcion.required" => "Debes completar este campo",
+            "password" => "Debes completar el campo"
         ];
     }
 }

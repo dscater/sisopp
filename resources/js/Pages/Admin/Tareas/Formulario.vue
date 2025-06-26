@@ -3,6 +3,7 @@ import { useForm, usePage } from "@inertiajs/vue3";
 import { useTareas } from "@/composables/tareas/useTareas";
 import { useAxios } from "@/composables/axios/useAxios";
 import { watch, ref, computed, defineEmits, onMounted, nextTick } from "vue";
+import axios from "axios";
 const props = defineProps({
     open_dialog: {
         type: Boolean,
@@ -24,12 +25,15 @@ watch(
     async (newValue) => {
         dialog.value = newValue;
         if (dialog.value) {
+            cargarListas();
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
             form = useForm(oTarea);
-            agregarTareaMaterial();
-            agregarTareaOperario();
+            if (form.id == 0) {
+                agregarTareaMaterial();
+                agregarTareaOperario();
+            }
         }
     }
 );
@@ -40,14 +44,18 @@ watch(
     }
 );
 
-const { flash } = usePage().props;
+const { flash, auth } = usePage().props;
 
-const listUsuarios = ref([]);
+const listAreas = ref([]);
+const listProductos = ref([]);
+const listMaterials = ref([]);
+const listSupervisores = ref([]);
+const listOperarios = ref([]);
 
 const tituloDialog = computed(() => {
     return accion.value == 0
-        ? `<i class="fa fa-plus"></i> Nueva Área de producción`
-        : `<i class="fa fa-edit"></i> Editar Área de producción`;
+        ? `<i class="fa fa-plus"></i> Nueva Tarea`
+        : `<i class="fa fa-edit"></i> Editar Tarea`;
 });
 
 const enviarFormulario = () => {
@@ -104,12 +112,43 @@ const cerrarDialog = () => {
 };
 
 const cargarListas = () => {
-    cargarUsuarios();
+    cargarAreas();
+    cargarProductos();
+    cargarMaterials();
+    cargarUsuariosSupervisores();
+    cargarUsuariosOperadores();
 };
 
-const cargarUsuarios = async () => {
-    const data = await axiosGet(route("usuarios.listado"));
-    listUsuarios.value = data.usuarios;
+const cargarAreas = () => {
+    axios.get(route("areas.listado")).then((response) => {
+        listAreas.value = response.data.areas;
+    });
+};
+
+const cargarProductos = () => {
+    axios.get(route("productos.listado")).then((response) => {
+        listProductos.value = response.data.productos;
+    });
+};
+
+const cargarMaterials = () => {
+    axios.get(route("materials.listado")).then((response) => {
+        listMaterials.value = response.data.materials;
+    });
+};
+
+const cargarUsuariosSupervisores = async () => {
+    const data = await axiosGet(route("usuarios.listado"), {
+        tipo: "SUPERVISOR",
+    });
+    listSupervisores.value = data.usuarios;
+};
+
+const cargarUsuariosOperadores = async () => {
+    const data = await axiosGet(route("usuarios.listado"), {
+        tipo: "OPERARIOS",
+    });
+    listOperarios.value = data.usuarios;
 };
 
 const agregarTareaMaterial = () => {
@@ -195,15 +234,22 @@ onMounted(() => {
                             </div>
                             <div class="col-md-4 mt-2">
                                 <label>Seleccionar Área de Producción*</label>
-                                <select
-                                    class="form-select"
+                                <el-select
+                                    class="w-100"
                                     :class="{
                                         'parsley-error': form.errors?.area_id,
                                     }"
                                     v-model="form.area_id"
+                                    placeholder="- Seleccione -"
+                                    filtereable
                                 >
-                                    <option value="">- Seleccione -</option>
-                                </select>
+                                    <el-option
+                                        v-for="item in listAreas"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
 
                                 <ul
                                     v-if="form.errors?.area_id"
@@ -216,17 +262,23 @@ onMounted(() => {
                             </div>
                             <div class="col-md-4 mt-2">
                                 <label>Seleccionar Producto*</label>
-                                <select
-                                    class="form-select"
+                                <el-select
+                                    class="w-100"
                                     :class="{
                                         'parsley-error':
                                             form.errors?.producto_id,
                                     }"
                                     v-model="form.producto_id"
+                                    placeholder="- Seleccione -"
+                                    filtereable
                                 >
-                                    <option value="">- Seleccione -</option>
-                                </select>
-
+                                    <el-option
+                                        v-for="item in listProductos"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
                                 <ul
                                     v-if="form.errors?.producto_id"
                                     class="parsley-errors-list filled"
@@ -238,15 +290,22 @@ onMounted(() => {
                             </div>
                             <div class="col-md-4 mt-2">
                                 <label>Seleccionar supervisor*</label>
-                                <select
-                                    class="form-select"
+                                <el-select
+                                    class="w-100"
                                     :class="{
                                         'parsley-error': form.errors?.user_id,
                                     }"
+                                    placeholder="- Seleccione -"
                                     v-model="form.user_id"
+                                    filterable
                                 >
-                                    <option value="">- Seleccione -</option>
-                                </select>
+                                    <el-option
+                                        v-for="item in listSupervisores"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.full_name"
+                                    ></el-option>
+                                </el-select>
                                 <ul
                                     v-if="form.errors?.user_id"
                                     class="parsley-errors-list filled"
@@ -274,16 +333,23 @@ onMounted(() => {
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <select
-                                                            class="form-select w-100"
+                                                        <el-select
+                                                            class="w-100"
                                                             v-model="
                                                                 item.material_id
                                                             "
+                                                            placeholder="- Seleccione -"
+                                                            filtereable
                                                         >
-                                                            <option value="">
-                                                                - Seleccione -
-                                                            </option>
-                                                        </select>
+                                                            <el-option
+                                                                v-for="item in listMaterials"
+                                                                :key="item.id"
+                                                                :value="item.id"
+                                                                :label="
+                                                                    item.nombre
+                                                                "
+                                                            ></el-option>
+                                                        </el-select>
                                                     </td>
                                                     <td style="width: 10px">
                                                         <button
@@ -315,6 +381,14 @@ onMounted(() => {
                                         </button>
                                     </div>
                                 </div>
+                                <ul
+                                    v-if="form.errors?.tarea_materials"
+                                    class="parsley-errors-list filled d-block"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.tarea_materials }}
+                                    </li>
+                                </ul>
                             </div>
                             <div class="col-md-6">
                                 <h4 class="w-100 text-center mt-0">
@@ -331,16 +405,23 @@ onMounted(() => {
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <select
-                                                            class="form-select w-100"
+                                                        <el-select
+                                                            class="w-100"
+                                                            placeholder="- Seleccione -"
                                                             v-model="
                                                                 item.user_id
                                                             "
+                                                            filterable
                                                         >
-                                                            <option value="">
-                                                                - Seleccione -
-                                                            </option>
-                                                        </select>
+                                                            <el-option
+                                                                v-for="item in listOperarios"
+                                                                :key="item.id"
+                                                                :value="item.id"
+                                                                :label="
+                                                                    item.full_name
+                                                                "
+                                                            ></el-option>
+                                                        </el-select>
                                                     </td>
                                                     <td style="width: 10px">
                                                         <button
@@ -372,6 +453,30 @@ onMounted(() => {
                                         </button>
                                     </div>
                                 </div>
+                                <ul
+                                    v-if="form.errors?.tarea_operarios"
+                                    class="parsley-errors-list filled d-block"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.tarea_operarios }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row" v-if="auth.user.tipo == 'SUPERVISOR'">
+                            <div class="col-12">
+                                <label>Estado*:</label>
+                                <select
+                                    class="form-select"
+                                    v-model="form.estado"
+                                >
+                                    <option value="">- Seleccione -</option>
+                                    <option value="PENDIENTE">PENDIENTE</option>
+                                    <option value="INICIADO">INICIADO</option>
+                                    <option value="FINALIZADO">
+                                        FINALIZADO
+                                    </option>
+                                </select>
                             </div>
                         </div>
                     </form>

@@ -34,9 +34,15 @@ class UsuarioController extends Controller
         return Inertia::render("Admin/Usuarios/Clientes");
     }
 
-    public function listado(): JsonResponse
+    public function listado(Request $request): JsonResponse
     {
-        $usuarios = User::where("id", "!=", 1)->where("status", 1)->get();
+        $usuarios = User::where("id", "!=", 1);
+
+        if (isset($request->tipo) && $request->tipo) {
+            $usuarios->where("tipo", $request->tipo);
+        }
+
+        $usuarios = $usuarios->where("status", 1)->get();
         return response()->JSON([
             "usuarios" => $usuarios
         ]);

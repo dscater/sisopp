@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Services\HistorialAccionService;
 use App\Models\Producto;
-use App\Models\Tmaterial;
+use App\Models\Tarea;
+use App\Models\TareaMaterial;
+use App\Models\Tproducto;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
@@ -18,22 +20,22 @@ class ProductoService
 
     public function listado(): Collection
     {
-        $materials = Producto::select("materials.*")->get();
-        return $materials;
+        $productos = Producto::select("productos.*")->get();
+        return $productos;
     }
 
     public function listadoDataTable(int $length, int $start, int $page, string $search): LengthAwarePaginator
     {
-        $materials = Producto::select("materials.*");
+        $productos = Producto::select("productos.*");
         if ($search && trim($search) != '') {
-            $materials->where("nombre", "LIKE", "%$search%");
+            $productos->where("nombre", "LIKE", "%$search%");
         }
-        $materials = $materials->paginate($length, ['*'], 'page', $page);
-        return $materials;
+        $productos = $productos->paginate($length, ['*'], 'page', $page);
+        return $productos;
     }
 
     /**
-     * Crear material
+     * Crear producto
      *
      * @param array $datos
      * @return Producto
@@ -41,58 +43,58 @@ class ProductoService
     public function crear(array $datos): Producto
     {
 
-        $material = Producto::create([
+        $producto = Producto::create([
             "nombre" => mb_strtoupper($datos["nombre"]),
             "descripcion" => mb_strtoupper($datos["descripcion"]),
             "fecha_registro" => date("Y-m-d")
         ]);
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN PRODUCTO", $material);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN PRODUCTO", $producto);
 
-        return $material;
+        return $producto;
     }
 
     /**
-     * Actualizar material
+     * Actualizar producto
      *
      * @param array $datos
-     * @param Producto $material
+     * @param Producto $producto
      * @return Producto
      */
-    public function actualizar(array $datos, Producto $material): Producto
+    public function actualizar(array $datos, Producto $producto): Producto
     {
-        $old_material = Producto::find($material->id);
-        $material->update([
+        $old_producto = Producto::find($producto->id);
+        $producto->update([
             "nombre" => mb_strtoupper($datos["nombre"]),
             "descripcion" => mb_strtoupper($datos["descripcion"]),
         ]);
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN PRODUCTO", $old_material, $material);
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN PRODUCTO", $old_producto, $producto);
 
-        return $material;
+        return $producto;
     }
 
     /**
-     * Eliminar material
+     * Eliminar producto
      *
-     * @param Producto $material
+     * @param Producto $producto
      * @return boolean
      */
-    public function eliminar(Producto $material): bool
+    public function eliminar(Producto $producto): bool
     {
         // verificar usos
-        $usos = Tmaterial::where("material_id", $material->id)->get();
+        $usos = Tarea::where("producto_id", $producto->id)->get();
         if (count($usos) > 0) {
             throw ValidationException::withMessages([
                 'error' =>  "No es posible eliminar este registro porque esta siendo utilizado por otros registros",
             ]);
         }
-        // no eliminar materials predeterminados para el funcionamiento del sistema
-        $old_material = Producto::find($material->id);
-        $material->delete();
+        // no eliminar productos predeterminados para el funcionamiento del sistema
+        $old_producto = Producto::find($producto->id);
+        $producto->delete();
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN PRODUCTO", $old_material);
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN PRODUCTO", $old_producto);
 
         return true;
     }

@@ -524,7 +524,11 @@ const logout = () => {
                     class="menu-header"
                     v-if="
                         user_logeado.permisos == '*' ||
-                        user_logeado.permisos.includes('usuarios.index')
+                        user_logeado.permisos.includes('usuarios.index') ||
+                        user_logeado.permisos.includes('areas.index') ||
+                        user_logeado.permisos.includes('materials.index') ||
+                        user_logeado.permisos.includes('productos.index') ||
+                        user_logeado.permisos.includes('tareas.index')
                     "
                 >
                     ADMINISTRACIÓN
@@ -669,9 +673,7 @@ const logout = () => {
                     "
                     class="menu-item"
                     :class="[
-                        route_current == 'reportes.tareas'
-                            ? 'active'
-                            : 'none',
+                        route_current == 'reportes.tareas' ? 'active' : 'none',
                     ]"
                 >
                     <Link :href="route('reportes.tareas')" class="menu-link">

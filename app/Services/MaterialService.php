@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Services\HistorialAccionService;
 use App\Models\Material;
+use App\Models\TareaMaterial;
 use App\Models\Tmaterial;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -81,7 +82,7 @@ class MaterialService
     public function eliminar(Material $material): bool
     {
         // verificar usos
-        $usos = Tmaterial::where("material_id", $material->id)->get();
+        $usos = TareaMaterial::where("material_id", $material->id)->get();
         if (count($usos) > 0) {
             throw ValidationException::withMessages([
                 'error' =>  "No es posible eliminar este registro porque esta siendo utilizado por otros registros",

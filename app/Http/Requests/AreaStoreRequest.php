@@ -11,7 +11,7 @@ class AreaStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,16 @@ class AreaStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "nombre" => "required",
+            "descripcion" => "nullable",
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            "nombre.required" => "Debes completar este campo",
+            "descripcion.required" => "Debes completar este campo",
         ];
     }
 }

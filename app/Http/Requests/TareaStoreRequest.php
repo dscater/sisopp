@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TareaMaterialRule;
+use App\Rules\TareaOperarioRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TareaStoreRequest extends FormRequest
@@ -11,7 +13,7 @@ class TareaStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,26 @@ class TareaStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "descripcion" => "required",
+            "area_id" => "required",
+            "producto_id" => "required",
+            "user_id" => "required",
+            "estado" => "required",
+            "tarea_materials" => ["required", new TareaMaterialRule],
+            "tarea_operarios" => ["required", new TareaOperarioRule],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            "descripcion.required" => "Este campo es obligatorio",
+            "area_id.required" => "Este campo es obligatorio",
+            "producto_id.required" => "Este campo es obligatorio",
+            "user_id.required" => "Este campo es obligatorio",
+            "estado.required" => "Este campo es obligatorio",
+            "tarea_materials.required" => "Este campo es obligatorio",
+            "tarea_operarios.required" => "Este campo es obligatorio",
         ];
     }
 }

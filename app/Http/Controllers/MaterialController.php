@@ -42,18 +42,6 @@ class MaterialController extends Controller
     }
 
     /**
-     * Listado de materials para portal
-     *
-     * @return JsonResponse
-     */
-    public function listadoPortal(): JsonResponse
-    {
-        return response()->JSON([
-            "materials" => $this->materialService->listado()
-        ]);
-    }
-
-    /**
      * Endpoint para obtener la lista de materials paginado para datatable
      *
      * @param Request $request

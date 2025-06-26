@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AreaStoreRequest;
-use App\Http\Requests\AreaUpdateRequest;
+use App\Http\Requests\TareaStoreRequest;
+use App\Http\Requests\TareaUpdateRequest;
 use App\Models\Tarea;
 use App\Services\TareaService;
 use Illuminate\Http\JsonResponse;
@@ -80,10 +80,10 @@ class TareaController extends Controller
     /**
      * Registrar un nuevo tarea
      *
-     * @param AreaStoreRequest $request
+     * @param TareaStoreRequest $request
      * @return RedirectResponse|Response
      */
-    public function store(AreaStoreRequest $request): RedirectResponse|Response
+    public function store(TareaStoreRequest $request): RedirectResponse|Response
     {
         DB::beginTransaction();
         try {
@@ -107,10 +107,10 @@ class TareaController extends Controller
      */
     public function show(Tarea $tarea): JsonResponse
     {
-        return response()->JSON($tarea->load(["tarea_materials", "tarea_operarios"]));
+        return response()->JSON($tarea->load(["area", "producto", "supervisor", "tarea_materials.material", "tarea_operarios.user"]));
     }
 
-    public function update(Tarea $tarea, AreaUpdateRequest $request)
+    public function update(Tarea $tarea, TareaUpdateRequest $request)
     {
         DB::beginTransaction();
         try {

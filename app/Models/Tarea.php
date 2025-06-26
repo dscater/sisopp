@@ -28,6 +28,21 @@ class Tarea extends Model
     }
 
     //RELACIONES
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id');
+    }
+
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'producto_id');
+    }
+
+    public function supervisor()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function tarea_materials()
     {
         return $this->hasMany(TareaMaterial::class, 'tarea_id');

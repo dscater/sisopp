@@ -42,18 +42,6 @@ class AreaController extends Controller
     }
 
     /**
-     * Listado de areas para portal
-     *
-     * @return JsonResponse
-     */
-    public function listadoPortal(): JsonResponse
-    {
-        return response()->JSON([
-            "areas" => $this->areaService->listado()
-        ]);
-    }
-
-    /**
      * Endpoint para obtener la lista de areas paginado para datatable
      *
      * @param Request $request

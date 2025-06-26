@@ -8,6 +8,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import PanelToolbar from "@/Components/PanelToolbar.vue";
 // import { useMenu } from "@/composables/useMenu";
 import Formulario from "./Formulario.vue";
+import Ver from "./Ver.vue";
 // const { mobile, identificaDispositivo } = useMenu();
 const { props: props_page } = usePage();
 const { setLoading } = useApp();
@@ -39,7 +40,7 @@ const columns = [
     },
     {
         title: "SUPERVISOR",
-        data: "user.full_name",
+        data: "supervisor.full_name",
     },
     {
         title: "ESTADO",
@@ -55,6 +56,7 @@ const columns = [
         render: function (data, type, row) {
             let buttons = ``;
 
+            buttons += `<button class="mx-1 rounded-0 btn btn-primary ver" data-id="${row.id}"><i class="fa fa-eye"></i></button>`;
             if (
                 props_page.auth?.user.permisos == "*" ||
                 props_page.auth?.user.permisos.includes("tareas.edit")
@@ -68,7 +70,7 @@ const columns = [
             ) {
                 buttons += ` <button class="mx-0 rounded-0 btn btn-danger eliminar"
                  data-id="${row.id}"
-                 data-nombre="${row.nombre}"
+                 data-nombre="${row.codigo}"
                  data-url="${route(
                      "tareas.destroy",
                      row.id
@@ -82,6 +84,8 @@ const columns = [
 const loading = ref(false);
 const accion_dialog = ref(0);
 const open_dialog = ref(false);
+const accion_dialog_ver = ref(0);
+const open_dialog_ver = ref(false);
 
 const agregarRegistro = () => {
     limpiarTarea();
@@ -90,6 +94,16 @@ const agregarRegistro = () => {
 };
 
 const accionesRow = () => {
+    // ver
+    $("#table-tarea").on("click", "button.ver", function (e) {
+        e.preventDefault();
+        let id = $(this).attr("data-id");
+        axios.get(route("tareas.show", id)).then((response) => {
+            setTarea(response.data, true);
+            accion_dialog_ver.value = 1;
+            open_dialog_ver.value = true;
+        });
+    });
     // editar
     $("#table-tarea").on("click", "button.editar", function (e) {
         e.preventDefault();
@@ -233,4 +247,10 @@ onBeforeUnmount(() => {
         @envio-formulario="updateDatatable"
         @cerrar-dialog="open_dialog = false"
     ></Formulario>
+
+    <Ver
+        :open_dialog="open_dialog_ver"
+        :accion_dialog="accion_dialog_ver"
+        @cerrar-dialog="open_dialog_ver = false"
+    ></Ver>
 </template>

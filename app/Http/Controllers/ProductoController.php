@@ -42,18 +42,6 @@ class ProductoController extends Controller
     }
 
     /**
-     * Listado de productos para portal
-     *
-     * @return JsonResponse
-     */
-    public function listadoPortal(): JsonResponse
-    {
-        return response()->JSON([
-            "productos" => $this->productoService->listado()
-        ]);
-    }
-
-    /**
      * Endpoint para obtener la lista de productos paginado para datatable
      *
      * @param Request $request
