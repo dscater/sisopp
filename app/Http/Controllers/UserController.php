@@ -82,6 +82,17 @@ class UserController extends Controller
             if ($permisos == '*' || (is_array($permisos) && in_array('tareas.index', $permisos))) {
                 $tareas = Tarea::select("tareas.id");
                 $tareas = $tareas->count();
+                if (Auth::user()->tipo == 'OPERARIOS') {
+                    $tareas = Tarea::select("tareas.*")
+                        ->join("tarea_operarios", "tarea_operarios.tarea_id", "=", "tareas.id");
+
+                    if (Auth::user()->tipo == 'OPERARIOS') {
+                        $tareas->where("tarea_operarios.user_id", Auth::user()->id);
+                    }
+                    $tareas->distinct("tareas.id");
+                    $tareas->groupBy("tareas.id");
+                    $tareas = $tareas->count();
+                }
                 $array_infos[] = [
                     'label' => 'TAREAS',
                     'cantidad' => $tareas,

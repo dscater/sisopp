@@ -3,17 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Usuarios</title>
+    <title>Tareas</title>
     <style type="text/css">
         * {
             font-family: sans-serif;
         }
 
         @page {
-            margin-top: 1.5cm;
-            margin-bottom: 0.3cm;
-            margin-left: 0.3cm;
-            margin-right: 0.3cm;
+            margin-top: 1cm;
+            margin-bottom: 1cm;
+            margin-left: 1.5cm;
+            margin-right: 1cm;
         }
 
         table {
@@ -37,7 +37,6 @@
         table tbody tr td {
             font-size: 6pt;
         }
-
 
         .encabezado {
             width: 100%;
@@ -148,6 +147,9 @@
 
 <body>
     @inject('configuracion', 'App\Models\Configuracion')
+    @php
+        $cont = 0;
+    @endphp
     <div class="encabezado">
         <div class="logo">
             <img src="{{ $configuracion->first()->logo_b64 }}">
@@ -155,24 +157,18 @@
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">LISTA DE USUARIOS</h4>
+        <h4 class="texto">LISTA DE TAREAS</h4>
         <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
     </div>
     <table border="1">
         <thead class="bg-principal">
             <tr>
-                <th width="3%">N°</th>
-                <th width="5%">FOTO</th>
-                <th>USUARIO</th>
-                <th>PATERNO</th>
-                <th>MATERNO</th>
-                <th>NOMBRE(S)</th>
-                <th>C.I.</th>
-                <th>DIRECCIÓN</th>
-                <th>CORREO</th>
-                <th>TELÉFONO/CELULAR</th>
-                <th>TIPO</th>
-                <th>ACCESO</th>
+                <th width="10%">CÓDIGO</th>
+                <th>DESCRIPCIÓN DE TAREA</th>
+                <th>ÁREA DE PRODUCCIÓN</th>
+                <th>PRODUCTO</th>
+                <th>SUPERSIVOR</th>
+                <th>ESTADO</th>
                 <th width="9%">FECHA DE REGISTRO</th>
             </tr>
         </thead>
@@ -180,24 +176,15 @@
             @php
                 $cont = 1;
             @endphp
-            @foreach ($usuarios as $user)
+            @foreach ($tareas as $tarea)
                 <tr>
-                    <td class="centreado">{{ $cont++ }}</td>
-                    <td class="img_celda centreado">
-                        <img src="{{ $user->foto_b64 }}" alt="Foto">
-
-                    </td>
-                    <td>{{ $user->usuario }}</td>
-                    <td class="">{{ $user->paterno }}</td>
-                    <td class="">{{ $user->materno }}</td>
-                    <td class="">{{ $user->nombre }}</td>
-                    <td class="">{{ $user->full_ci }}</td>
-                    <td class="">{{ $user->dir }}</td>
-                    <td class="">{{ $user->correo }}</td>
-                    <td class="">{{ $user->fono }}</td>
-                    <td class="">{{ $user->tipo }}</td>
-                    <td class="centreado">{{ $user->acceso == 1 ? 'HABILITADO' : 'DENEGADO' }}</td>
-                    <td class="centreado">{{ $user->fecha_registro_t }}</td>
+                    <td class="">{{ $tarea->codigo }}</td>
+                    <td class="">{{ $tarea->descripcion }}</td>
+                    <td class="">{{ $tarea->area->nombre }}</td>
+                    <td class="">{{ $tarea->producto->nombre }}</td>
+                    <td class="">{{ $tarea->supervisor->full_name }}</td>
+                    <td class="">{{ $tarea->estado }}</td>
+                    <td class="centreado">{{ $tarea->fecha_registro_t }}</td>
                 </tr>
             @endforeach
         </tbody>

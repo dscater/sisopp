@@ -121,5 +121,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
 
     Route::get('reportes/tareas', [ReporteController::class, 'tareas'])->name("reportes.tareas");
     Route::get('reportes/r_tareas', [ReporteController::class, 'r_tareas'])->name("reportes.r_tareas");
+
+    Route::get('reportes/rg_tareas', [ReporteController::class, 'rg_tareas'])->name("reportes.rg_tareas");
 });
 require __DIR__ . '/auth.php';

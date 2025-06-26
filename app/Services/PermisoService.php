@@ -69,6 +69,7 @@ class PermisoService
             "reportes.r_usuarios",
             "reportes.tareas",
             "reportes.r_tareas",
+            "reportes.rg_tareas"
         ],
         "SUPERVISOR" => [
             "areas.api",
@@ -110,12 +111,22 @@ class PermisoService
             "tareas.show",
             "tareas.update",
             "tareas.destroy",
+
+            "reportes.tareas",
+            "reportes.r_tareas",
+            "reportes.rg_tareas"
         ],
         "OPERARIOS" => [
+            "areas.listado",
+            
             "tareas.api",
             "tareas.listado",
             "tareas.index",
             "tareas.show",
+
+            "reportes.tareas",
+            "reportes.r_tareas",
+            "reportes.rg_tareas"
         ],
     ];
 

@@ -642,7 +642,7 @@ const logout = () => {
                     v-if="
                         user_logeado.permisos == '*' ||
                         user_logeado.permisos.includes('reportes.usuarios') ||
-                        user_logeado.permisos.includes('reportes.clientes')
+                        user_logeado.permisos.includes('reportes.tareas')
                     "
                 >
                     REPORTES

@@ -1,31 +1,20 @@
-<script>
-const breadbrums = [
-    {
-        title: "Inicio",
-        disabled: false,
-        url: route("inicio"),
-        name_url: "inicio",
-    },
-    {
-        title: "Reporte Usuarios",
-        disabled: false,
-        url: "",
-        name_url: "",
-    },
-];
-</script>
-
 <script setup>
 import { useApp } from "@/composables/useApp";
 import { computed, onMounted, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
+import axios from "axios";
 
 const { setLoading } = useApp();
 
-const cargarListas = () => {};
-
-const listSucursals = ref([]);
-
+const cargarListas = () => {
+    cargarAreas();
+};
+const cargarAreas = () => {
+    axios.get(route("areas.listado")).then((response) => {
+        listAreas.value = response.data.areas;
+        listAreas.value.unshift({ id: "todos", nombre: "TODOS" });
+    });
+};
 onMounted(() => {
     cargarListas();
     setTimeout(() => {
@@ -48,12 +37,17 @@ const txtBtn = computed(() => {
     return "Generar Reporte";
 });
 
-const listAreas = ref([{ value: "todos", label: "TODOS" }]);
-const listEstados = ref([{ value: "todos", label: "TODOS" }]);
+const listAreas = ref([]);
+const listEstados = ref([
+    { value: "todos", label: "TODOS" },
+    { value: "PENDIENTE", label: "PENDIENTE" },
+    { value: "INICIADO", label: "INICIADO" },
+    { value: "FINALIZADO", label: "FINALIZADO" },
+]);
 
 const generarReporte = () => {
     generando.value = true;
-    const url = route("reportes.r_usuarios", form.value);
+    const url = route("reportes.r_tareas", form.value);
     window.open(url, "_blank");
     setTimeout(() => {
         generando.value = false;
@@ -79,44 +73,27 @@ const generarReporte = () => {
                         <div class="row">
                             <div class="col-md-12">
                                 <label>Seleccionar Área de producción*</label>
-                                <select
-                                    :hide-details="
-                                        form.errors?.area_id ? false : true
-                                    "
-                                    :error="form.errors?.area_id ? true : false"
-                                    :error-messages="
-                                        form.errors?.area_id
-                                            ? form.errors?.area_id
-                                            : ''
-                                    "
+                                <el-select
                                     v-model="form.area_id"
-                                    class="form-control"
+                                    class="w-100"
+                                    filterable
                                 >
-                                    <option
+                                    <el-option
                                         v-for="item in listAreas"
-                                        :value="item.value"
-                                    >
-                                        {{ item.label }}
-                                    </option>
-                                </select>
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
                             </div>
                             <div class="col-md-12 mt-2">
                                 <label>Seleccionar Estado*</label>
                                 <select
-                                    :hide-details="
-                                        form.errors?.estado ? false : true
-                                    "
-                                    :error="form.errors?.estado ? true : false"
-                                    :error-messages="
-                                        form.errors?.estado
-                                            ? form.errors?.estado
-                                            : ''
-                                    "
                                     v-model="form.estado"
                                     class="form-control"
                                 >
                                     <option
-                                        v-for="item in listAreas"
+                                        v-for="item in listEstados"
                                         :value="item.value"
                                     >
                                         {{ item.label }}
@@ -126,14 +103,14 @@ const generarReporte = () => {
                             <div class="col-md-12 mt-2">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label>Fecha inicio*</label>
+                                        <label>Fecha inicio</label>
                                         <input
                                             type="date"
                                             class="form-control"
                                         />
                                     </div>
                                     <div class="col-md-6">
-                                        <label>Fecha fin*</label>
+                                        <label>Fecha fin</label>
                                         <input
                                             type="date"
                                             class="form-control"

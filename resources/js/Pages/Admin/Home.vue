@@ -64,56 +64,60 @@ const obtenerFechaActual = () => {
 };
 
 const form = ref({
-    producto_id: "todos",
-    sucursal_id:
-        auth?.user.sucursals_todo == 0 ? user.value.sucursal_id : "todos",
+    estado: "todos",
     fecha_ini: obtenerFechaActual(),
     fecha_fin: obtenerFechaActual(),
-    factura: "todos",
 });
+
+const listEstados = ref([
+    { value: "todos", label: "TODOS" },
+    { value: "PENDIENTE", label: "PENDIENTE" },
+    { value: "INICIADO", label: "INICIADO" },
+    { value: "FINALIZADO", label: "FINALIZADO" },
+]);
 
 const generarGrafico = async () => {
     generando.value = true;
-    renderChart(
-        "container",
-        ["ÁREA 1", "ÁREA 2", "ÁREA 3", "ÁREA 4"],
-        [
-            {
-                name: "PENDIENTE",
-                data: [2, 0, 1, 0],
-            },
-            {
-                name: "INICIADO",
-                data: [0, 1, 0, 1],
-            },
-            {
-                name: "FINALIZADO",
-                data: [3, 2, 0, 1],
-            },
-        ]
-    );
-    // axios
-    //     .get(route("reportes.r_g_cantidad_orden_ventas"), {
-    //         params: form.value,
-    //     })
-    //     .then((response) => {
-    //         nextTick(() => {
-    //             const containerId = `container`;
-    //             const container = document.getElementById(containerId);
-    //             // Verificar que el contenedor exista y tenga un tamaño válido
-    //             if (container) {
-    //                 renderChart(
-    //                     containerId,
-    //                     response.data.categories,
-    //                     response.data.data
-    //                 );
-    //             } else {
-    //                 console.error(`Contenedor ${containerId} no válido.`);
-    //             }
-    //         });
-    //         // Create the chart
-    //         generando.value = false;
-    //     });
+    // renderChart(
+    //     "container",
+    //     ["ÁREA 1", "ÁREA 2", "ÁREA 3", "ÁREA 4"],
+    //     [
+    //         {
+    //             name: "PENDIENTE",
+    //             data: [2, 0, 1, 0],
+    //         },
+    //         {
+    //             name: "INICIADO",
+    //             data: [0, 1, 0, 1],
+    //         },
+    //         {
+    //             name: "FINALIZADO",
+    //             data: [3, 2, 0, 1],
+    //         },
+    //     ]
+    // );
+    axios
+        .get(route("reportes.rg_tareas"), {
+            params: form.value,
+        })
+        .then((response) => {
+            nextTick(() => {
+                const containerId = `container`;
+                const container = document.getElementById(containerId);
+                // Verificar que el contenedor exista y tenga un tamaño válido
+                if (container) {
+                    renderChart(
+                        containerId,
+                        response.data.categories,
+                        response.data.data
+                    );
+                } else {
+                    console.error(`Contenedor ${containerId} no válido.`);
+                }
+            });
+            // Create the chart
+            generando.value = false;
+        });
 };
 
 const renderChart = (containerId, categories, data) => {
@@ -123,7 +127,6 @@ const renderChart = (containerId, categories, data) => {
     Highcharts.chart(containerId, {
         chart: {
             type: "column",
-            height: calculatedHeight,
         },
         title: {
             align: "center",
@@ -150,8 +153,8 @@ const renderChart = (containerId, categories, data) => {
                     fontFamily: "Verdana, sans-serif",
                 },
             },
-            min: 0,
-            max: 3,
+            // min: 0,
+            // max: 3,
         },
         yAxis: {
             min: 0,
@@ -239,6 +242,40 @@ onMounted(() => {
         </div>
     </div>
     <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Estado</label>
+                    <select
+                        class="form-select"
+                        v-model="form.estado"
+                        @change="generarGrafico"
+                    >
+                        <option v-for="item in listEstados" :value="item.value">
+                            {{ item.label }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>Fecha inicio</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        v-model="form.fecha_ini"
+                        @keyup="generarGrafico"
+                    />
+                </div>
+                <div class="col-md-4">
+                    <label>Fecha final</label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        v-model="form.fecha_fin"
+                        @keyup="generarGrafico"
+                    />
+                </div>
+            </div>
+        </div>
         <div class="col-12" id="container"></div>
     </div>
 </template>
